@@ -56,6 +56,7 @@ type CalcData = {
 	baseIhr: string;
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
+	colleggtibleHabSize: string;
 	truthEggCount: string;
 };
 
@@ -75,6 +76,7 @@ const defaultCalcData = () => ({
 	baseIhr: '7440',
 	hatcheryCalm: '20',
 	colleggtibleIhr: '5',
+	colleggtibleHabSize: '5',
 	truthEggCount: '0',
 	monocle: nullArtifact,
 	gusset: nullArtifact,
@@ -215,6 +217,12 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			0,
 		);
 
+		const maxPegg = byCustomEgg.pegg?.reduce(
+			/* Max is the accumulator, which is passed into next iteration */
+			(max, each) => Math.max(max, each.maxFarmSizeReached),
+			0, // Intilize value of accumulator to start with
+		);
+
 		const sumTE = (backupVirtue: EIBackupResponse['virtue']) =>
 			backupVirtue?.eovEarnedList?.reduce((x, y) => x + y) ?? 0;
 
@@ -227,7 +235,8 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT3: String(diliSet?.dili.stones[1] ?? 0),
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
 			hatcheryCalm: String(ihcResearch?.level ?? 0),
-			colleggtibleIhr: String(Colleggtible.easterBonus(maxEaster ?? 0)),
+			colleggtibleIhr: String(Colleggtible.bonus(maxEaster ?? 0)),
+			colleggtibleHabSize: String(Colleggtible.bonus(maxPegg ?? 0)),
 			truthEggCount: String(sumTE(eiResponse?.virtue)),
 			chalice,
 			monocle,
@@ -402,8 +411,11 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	);
 
 	const maxHabSpace = useMemo(
-		() => 11_340_000_000 * gussetMultiplier(calc.data.gusset ?? nullArtifact),
-		[calc.data.gusset],
+		() =>
+			11_340_000_000 *
+			gussetMultiplier(calc.data.gusset ?? nullArtifact) *
+			(1 + Number.parseInt(calc.data.colleggtibleHabSize || '0', 10) / 100),
+		[calc.data.gusset, calc.data.colleggtibleHabSize],
 	);
 
 	const ihcMult = useMemo(
@@ -555,13 +567,18 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				baseIhr: '7440',
 				hatcheryCalm: '20',
 				colleggtibleIhr: '5',
+				colleggtibleHabSize: '5',
 				truthEggCount: '0',
 			}),
 		[calc],
 	);
 
 	const canHideExtra =
-		!calc.data.doubleDuration && calc.data.baseIhr === '7440' && calc.data.hatcheryCalm === '20';
+		!calc.data.doubleDuration &&
+		calc.data.baseIhr === '7440' &&
+		calc.data.hatcheryCalm === '20' &&
+		calc.data.colleggtibleIhr + calc.data.colleggtibleHabSize === '55' &&
+		calc.data.truthEggCount === '0';
 	const [showExtra, toggleShowExtra, setShowExtra] = useToggleState(!canHideExtra);
 	useEffect(() => {
 		if (!canHideExtra && !showExtra) {
@@ -656,6 +673,10 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							<div>
 								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
 								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
+							</div>
+							<div>
+								<Input datakey="colleggtibleHabSize" label="PEGG" max="5" min="0" type="number" />
+								<span>(Current egg → Contracts → Colleggtibles → P.E.G.G.)</span>
 							</div>
 							<div>
 								<Input
