@@ -675,7 +675,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
 							</div>
 							<div>
-								<Input datakey="colleggtibleHabSize" label="PEGG" max="5" min="0" type="number" />
+								<Input datakey="colleggtibleHabSize" label="PEGG:" max="5" min="0" type="number" />
 								<span>(Current egg → Contracts → Colleggtibles → P.E.G.G.)</span>
 							</div>
 							<div>
