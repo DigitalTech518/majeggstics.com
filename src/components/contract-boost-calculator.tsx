@@ -690,6 +690,12 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						<Output label="Time to fill habs" value={timeToMaxHabs || '∞'} />
 					</section>
 				)}
+				<hr />
+				<footer>
+					<a href="./" rel="noreferrer">
+						Back to Home
+					</a>
+				</footer>
 			</Calculator.Context.Provider>
 		</ApiUriContext.Provider>
 	);
