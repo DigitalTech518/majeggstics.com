@@ -86,12 +86,12 @@ test('locks bonus input open when not default', async ({ page }) => {
 test('calcs an 8-tok', async ({ page }) => {
 	// prettier-ignore
 	let outputs = [
-		[/runs out after/i, /10min/ ],
-		[/ge cost/i       , /16,000/],
-		[/online/i        , /3.125B/],
-		[/offline/i       , /9.374B/],
-		[/hab space/i     , /11.34B/],
-		[/time to fill/i  , /∞/     ],
+		[/runs out after/i, /10min/  ],
+		[/ge cost/i       , /16,000/ ],
+		[/online/i        , /3.125B/ ],
+		[/offline/i       , /9.374B/ ],
+		[/hab space/i     , /11.907B/],
+		[/time to fill/i  , /∞/      ],
 	];
 
 	const out = page.locator('#output span');
@@ -121,6 +121,7 @@ test('calcs an 8-tok', async ({ page }) => {
 	await page.getByLabel(/^IHR/).fill('2000');
 	await page.getByLabel(/IHC/).fill('10');
 	await page.getByLabel(/CIHR/).fill('2');
+	await page.getByLabel(/PEGG/).fill('0');
 
 	// prettier-ignore
 	outputs = [
@@ -156,12 +157,12 @@ test('calcs an 8-tok', async ({ page }) => {
 
 	// prettier-ignore
 	outputs = [
-		[/runs out after/i, /10min/ ],
-		[/ge cost/i       , /16,000/],
-		[/online/i        , /3.125B/],
-		[/offline/i       , /9.374B/],
-		[/hab space/i     , /11.34B/],
-		[/time to fill/i  , /∞/     ],
+		[/runs out after/i, /10min/  ],
+		[/ge cost/i       , /16,000/ ],
+		[/online/i        , /3.125B/ ],
+		[/offline/i       , /9.374B/ ],
+		[/hab space/i     , /11.907B/],
+		[/time to fill/i  , /∞/      ],
 	];
 
 	for (const match of outputs) await expect(out).toContainText(match);
@@ -193,6 +194,7 @@ test('calcs a 5-tok', async ({ page }) => {
 	await page.getByLabel(/^IHR/).fill('2000');
 	await page.getByLabel(/IHC/).fill('10');
 	await page.getByLabel(/CIHR/).fill('2');
+	await page.getByLabel(/PEGG/).fill('3');
 	await page.getByLabel(/TE/).fill('36');
 
 	// prettier-ignore
@@ -201,7 +203,7 @@ test('calcs a 5-tok', async ({ page }) => {
 		[/ge cost/i       , /10,400/  ],
 		[/online/i        , /790.855M/],
 		[/offline/i       , /1.582B/  ], 
-		[/hab space/i     , /12.701B/ ], 
+		[/hab space/i     , /13.082B/ ], 
 		[/time to fill/i  , /∞/       ],
 	];
 
@@ -225,6 +227,14 @@ test('checks rounding (minutes)', async ({ page }) => {
 	await diliInputs.getByLabel(/t2/i).fill('0');
 	await diliInputs.getByLabel(/t3/i).fill('4');
 	await diliInputs.getByLabel(/t4/i).fill('4');
+
+	if (await page.getByLabel(/boost duration/).isVisible()) {
+		await page.getByRole('button', { name: /reset bonus/i }).click();
+	} else {
+		await page.getByRole('button', { name: /show bonus/i }).click();
+	}
+
+	await page.getByLabel(/PEGG/).fill('0');
 
 	// prettier-ignore
 	const outputs = [
@@ -254,6 +264,7 @@ test('checks rounding (hours)', async ({ page }) => {
 	}
 
 	await page.getByLabel(/TE/).fill('148');
+	await page.getByLabel(/PEGG/).fill('0');
 
 	const ihrInputs = page.getByRole('group', { name: /ihr set/i }); // Set conditions where rounding wants to say 6hr 42min 21601sec
 	await ihrInputs.getByLabel(/t2/i).fill('0');

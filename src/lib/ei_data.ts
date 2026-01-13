@@ -230,5 +230,5 @@ export class Colleggtible {
 			return vals[3];
 		};
 
-	static easterBonus = Colleggtible.map(1, 2, 3, 5);
+	static bonus = Colleggtible.map(1, 2, 3, 5);
 }
