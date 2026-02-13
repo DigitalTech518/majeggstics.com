@@ -713,7 +713,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				)}
 				<hr />
 				<footer>
-					<a href="./" rel="noreferrer">
+					<a href="/" rel="noreferrer">
 						Back to Home
 					</a>
 				</footer>
